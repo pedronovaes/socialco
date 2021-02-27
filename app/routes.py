@@ -1,5 +1,6 @@
 from app import app
-from flask import render_template
+from app.forms import LoginForm, RegistrationForm
+from flask import render_template, flash, redirect
 
 # Fake content
 posts = [
@@ -27,3 +28,20 @@ def home():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        flash(f'Account created for {form.username.data}!', 'success')
+        return redirect('home')
+
+    return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/login')
+def login():
+    form = LoginForm()
+    return render_template('login.html', title='Login', form=form)

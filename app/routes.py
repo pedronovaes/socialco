@@ -3,7 +3,7 @@ This module handles several routes that social.co supports using view
 functions.
 """
 
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, url_for
 from app import app
 from app.forms import LoginForm
 
@@ -31,6 +31,7 @@ def index():
         posts=posts
     )
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """View function to login a user."""
@@ -41,7 +42,7 @@ def login():
     if form.validate_on_submit():
         flash(f'Login requested for user {form.username.data}, remember_me={form.remember_me.data}')
 
-        return redirect(location='/index')
+        return redirect(location=url_for('index'))
 
     # Executes when the browser sends the GET request to receive the web page
     # with the form.

@@ -5,6 +5,7 @@ SQLAlchemy store in __init__ file will do the translations required to map
 objects create from these classes into rows in the proper database tables.
 """
 
+from datetime import datetime, timezone
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -25,5 +26,25 @@ class User(db.Model):
     )
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
+    posts: so.WriteOnlyMapped['Post'] = so.relationship(back_populates='author')
+
     def __repr__(self):
         return f"<User {self.username}>"
+
+
+class Post(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    body: so.Mapped[str] = so.mapped_column(sa.String(140))
+    timestamp: so.Mapped[datetime] = so.mapped_column(
+        index=True,
+        default=lambda: datetime.now(timezone.utc)
+    )
+    user_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey(column=User.id),  # References a User table primary key.
+        index=True
+    )
+
+    author: so.Mapped[User] = so.relationship(back_populates='posts')
+
+    def __repr__(self):
+        return f"<Post {self.body}>"

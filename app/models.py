@@ -7,13 +7,17 @@ objects create from these classes into rows in the proper database tables.
 
 from datetime import datetime, timezone
 from typing import Optional
+
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
+from flask_login import UserMixin
+
+from app import db, login
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(
         sa.String(64),
@@ -58,3 +62,12 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"<Post {self.body}>"
+
+
+@login.user_loader
+def load_user(id):
+    """
+    Retrieve the user id from the session, and then loads that user into
+    memory.
+    """
+    return db.session.get(User, int(id))

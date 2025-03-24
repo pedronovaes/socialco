@@ -7,6 +7,7 @@ objects create from these classes into rows in the proper database tables.
 
 from datetime import datetime, timezone
 from typing import Optional
+from hashlib import md5
 
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -44,6 +45,11 @@ class User(UserMixin, db.Model):
             pwhash=self.password_hash,
             password=password
         )
+
+    def avatar(self, size):
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+
+        return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
 
 
 class Post(db.Model):

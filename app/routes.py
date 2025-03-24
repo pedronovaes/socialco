@@ -4,6 +4,7 @@ functions.
 """
 
 from urllib.parse import urlsplit
+from datetime import datetime, timezone
 
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
@@ -123,3 +124,14 @@ def user(username):
     ]
 
     return render_template('user.html', user=user, posts=posts)
+
+
+# Using this decorator allows to execute any code before any view function in
+# the application.
+@app.before_request
+def before_request():
+
+    # Check if user is authenticated.
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now(tz=timezone.utc)
+        db.session.commit()

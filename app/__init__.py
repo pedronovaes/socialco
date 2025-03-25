@@ -13,4 +13,4 @@ migrate = Migrate(app=app, db=db)  # Database migration engine.
 login = LoginManager(app=app)  # Login initialization.
 login.login_view = 'login'  # Forces users to log in before view certain pages.
 
-from app import routes, models
+from app import routes, models, errors
